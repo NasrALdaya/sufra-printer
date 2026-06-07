@@ -65,7 +65,7 @@ fn spawn_bridge_server(state: Arc<state::AppState>) {
 }
 
 fn build_tray(app: &mut tauri::App) -> tauri::Result<()> {
-    let show = MenuItem::with_id(app, "show", "Open Safra Printer", true, None::<&str>)?;
+    let show = MenuItem::with_id(app, "show", "Open Sufra Printer", true, None::<&str>)?;
     let quit = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
     let menu = Menu::with_items(app, &[&show, &quit])?;
 
@@ -75,7 +75,7 @@ fn build_tray(app: &mut tauri::App) -> tauri::Result<()> {
         .ok_or_else(|| tauri::Error::AssetNotFound("default window icon".into()))?;
 
     TrayIconBuilder::with_id("main")
-        .tooltip("Safra Printer — silent ESC/POS bridge")
+        .tooltip("Sufra Printer — silent ESC/POS bridge")
         .icon(icon)
         .menu(&menu)
         .on_menu_event(|app, event| match event.id().as_ref() {

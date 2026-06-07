@@ -66,9 +66,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: ${{ github.ref_name }}
-          releaseName: 'Safra Printer ${{ github.ref_name }}'
+          releaseName: 'Sufra Printer ${{ github.ref_name }}'
           releaseBody: |
-            ## Safra Printer ${{ github.ref_name }}
+            ## Sufra Printer ${{ github.ref_name }}
 
             Silent ESC/POS thermal printer bridge for the Sufra dashboard.
 

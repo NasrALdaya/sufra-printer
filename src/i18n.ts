@@ -2,7 +2,7 @@ import { computed, ref, watch } from 'vue'
 
 export type Locale = 'ar' | 'en'
 
-const LS_KEY = 'safra_printer_locale'
+const LS_KEY = 'sufra_printer_locale'
 
 interface Dict {
   app: {
@@ -56,7 +56,7 @@ interface Dict {
 
 const en: Dict = {
   app: {
-    title: 'Safra Printer',
+    title: 'Sufra Printer',
     bridge_running: 'Bridge running',
     bridge_not_responding: 'Bridge not responding',
     no_app: 'No app responding at http://127.0.0.1:9177',

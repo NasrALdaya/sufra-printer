@@ -1,5 +1,5 @@
 #!/usr/bin/env pwsh
-# Smoke test for the Safra Printer bridge.
+# Smoke test for the Sufra Printer bridge.
 # Assumes `pnpm tauri dev` (or a built binary) is running locally.
 
 $ErrorActionPreference = 'Stop'
@@ -53,7 +53,7 @@ Write-Host '=== CORS preflight (simulate dashboard origin) ===' -ForegroundColor
 try {
     $cors = Invoke-WebRequest -Uri "$base/print" -Method OPTIONS `
         -Headers @{
-            'Origin'                         = 'https://dashboard.safra.app'
+            'Origin'                         = 'https://dashboard.sufra.app'
             'Access-Control-Request-Method'  = 'POST'
             'Access-Control-Request-Headers' = 'content-type'
         } -UseBasicParsing
@@ -61,7 +61,7 @@ try {
     Write-Host "Allow-Origin:  $($cors.Headers['Access-Control-Allow-Origin'])"
     Write-Host "Allow-Methods: $($cors.Headers['Access-Control-Allow-Methods'])"
     Write-Host "Allow-Headers: $($cors.Headers['Access-Control-Allow-Headers'])"
-    if ($cors.Headers['Access-Control-Allow-Origin'] -eq 'https://dashboard.safra.app') {
+    if ($cors.Headers['Access-Control-Allow-Origin'] -eq 'https://dashboard.sufra.app') {
         Write-Host 'OK — CORS allows dashboard origin' -ForegroundColor Green
     } else {
         Write-Host 'WARN — dashboard origin not in allowlist' -ForegroundColor Yellow

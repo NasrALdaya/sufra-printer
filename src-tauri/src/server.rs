@@ -80,7 +80,7 @@ struct PrintResponse {
 
 pub async fn run(state: Arc<AppState>) -> anyhow::Result<()> {
     // CORS allowlist:
-    //   - production dashboard at https://dashboard.safra.app
+    //   - production dashboard at https://dashboard.sufra.app
     //   - bridge's own Tauri webview (http(s)://tauri.localhost)
     //   - ANY loopback origin (localhost / 127.0.0.1 on any port, http or https)
     //
@@ -92,7 +92,7 @@ pub async fn run(state: Arc<AppState>) -> anyhow::Result<()> {
     let cors = CorsLayer::new()
         .allow_origin(AllowOrigin::predicate(|origin: &HeaderValue, _parts: &http::request::Parts| -> bool {
             let Ok(s) = origin.to_str() else { return false };
-            if s == "https://dashboard.safra.app" { return true }
+            if s == "https://dashboard.sufra.app" { return true }
             if s == "http://tauri.localhost" || s == "https://tauri.localhost" { return true }
             s.starts_with("http://localhost:")
                 || s.starts_with("https://localhost:")

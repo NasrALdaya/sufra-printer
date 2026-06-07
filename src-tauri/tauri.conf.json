@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Safra Printer",
+  "productName": "Sufra Printer",
   "version": "0.1.0",
-  "identifier": "app.safra.printer",
+  "identifier": "app.sufra.printer",
   "build": {
     "beforeDevCommand": "pnpm dev",
     "devUrl": "http://localhost:1420",
@@ -13,7 +13,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "Safra Printer",
+        "title": "Sufra Printer",
         "width": 480,
         "height": 640,
         "minWidth": 420,

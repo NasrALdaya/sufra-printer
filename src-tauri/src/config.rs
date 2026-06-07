@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::state::PrinterConfig;
 
-const CONFIG_DIR_NAME: &str = "Safra Printer";
+const CONFIG_DIR_NAME: &str = "Sufra Printer";
 const CONFIG_FILE_NAME: &str = "config.json";
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
@@ -49,8 +49,8 @@ impl From<StoredPrinter> for PrinterConfig {
     }
 }
 
-/// Resolve the on-disk config path. Windows: `%APPDATA%\Safra Printer\config.json`,
-/// Linux: `~/.config/Safra Printer/config.json`, macOS: `~/Library/Application Support/Safra Printer/config.json`.
+/// Resolve the on-disk config path. Windows: `%APPDATA%\Sufra Printer\config.json`,
+/// Linux: `~/.config/Sufra Printer/config.json`, macOS: `~/Library/Application Support/Sufra Printer/config.json`.
 pub fn config_path() -> anyhow::Result<PathBuf> {
     let dir = dirs::config_dir().context("could not resolve config dir for current user")?;
     Ok(dir.join(CONFIG_DIR_NAME).join(CONFIG_FILE_NAME))

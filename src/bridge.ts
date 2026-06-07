@@ -158,7 +158,7 @@ export function buildSampleReceipt(): Uint8Array {
   esc(0x61, 0x01) // Center
   text('Thank you!')
   lf()
-  text('safra.app')
+  text('sufra.app')
   lf()
   lf()
   lf()

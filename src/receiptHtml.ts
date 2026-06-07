@@ -224,7 +224,7 @@ function sampleEn(): SampleOrder {
     total: 50.03,
     paymentMethod: 'Card',
     thanks: 'Thank you',
-    brand: 'safra.app',
+    brand: 'sufra.app',
     labels: {
       order: 'Order #',
       invoice: 'Invoice #',
@@ -286,7 +286,7 @@ function sampleAr(): SampleOrder {
     total: 50.03,
     paymentMethod: 'بطاقة',
     thanks: 'شكراً لزيارتكم',
-    brand: 'safra.app',
+    brand: 'sufra.app',
     labels: {
       order: 'رقم الطلب',
       invoice: 'رقم الفاتورة',

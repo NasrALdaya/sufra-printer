@@ -1,6 +1,6 @@
-# Safra Printer
+# Sufra Printer
 
-Silent ESC/POS thermal printer bridge for the [Sufra](https://safra.app) restaurant dashboard.
+Silent ESC/POS thermal printer bridge for the [Sufra](https://sufra.app) restaurant dashboard.
 
 A small Tauri tray app that runs on the restaurant PC and exposes
 `http://127.0.0.1:9177` so the dashboard browser can print receipts and
@@ -32,4 +32,4 @@ crate graph compiles. Subsequent runs are fast.
 | GET    | `/health`| —                                              | Liveness + version + printers |
 | POST   | `/print` | `{ role, format: "escpos", data, jobId }`      | Send ESC/POS bytes to printer |
 
-CORS allowlist: `https://dashboard.safra.app`, `http://localhost:3000`.
+CORS allowlist: `https://dashboard.sufra.app`, `http://localhost:3000`.
