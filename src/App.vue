@@ -15,6 +15,7 @@ import {
   sendTestReceipt,
 } from './bridge'
 import { useI18n } from './i18n'
+import sufraLogoUrl from './assets/sufra-logo.png'
 
 const { t, locale, isRTL } = useI18n()
 
@@ -47,11 +48,16 @@ function decodeDevice(value: string): { vendorId: number; productId: number } | 
   return { vendorId: Number(v), productId: Number(p) }
 }
 
-function formatTime(ms: number): string {
+function formatDateTime(ms: number): string {
   if (!ms) return '—'
   const d = new Date(ms)
-  return d.toLocaleTimeString(locale.value === 'ar' ? 'ar-SA-u-nu-latn' : 'en-US')
+  const tag = locale.value === 'ar' ? 'ar-SA-u-nu-latn' : 'en-US'
+  const date = d.toLocaleDateString(tag, { day: '2-digit', month: '2-digit', year: 'numeric' })
+  const time = d.toLocaleTimeString(tag, { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })
+  return `${date} · ${time}`
 }
+
+const connectedStore = computed(() => health.value?.connectedStore ?? null)
 
 async function refresh(opts: { silent?: boolean } = {}) {
   if (!opts.silent) loading.value = true
@@ -175,7 +181,10 @@ onUnmounted(() => {
   <main class="app" :dir="isRTL ? 'rtl' : 'ltr'">
     <header>
       <div class="header-row">
-        <h1>{{ t('app.title') }}</h1>
+        <div class="brand">
+          <img :src="sufraLogoUrl" alt="Sufra" class="brand-logo" />
+          <h1>{{ t('app.title') }}</h1>
+        </div>
         <select v-model="locale" class="lang-select" :title="t('language.label')">
           <option value="ar">{{ t('language.ar') }}</option>
           <option value="en">{{ t('language.en') }}</option>
@@ -187,6 +196,24 @@ onUnmounted(() => {
           {{ t('app.bridge_running') }} · v{{ health.version }} · 127.0.0.1:9177
         </span>
         <span v-else>{{ t('app.bridge_not_responding') }}</span>
+      </div>
+
+      <!-- Connected-store strip: shows which Sufra dashboard tab last
+           announced itself via POST /hello, with the store's logo when
+           the dashboard sent one. Hidden when no store has been
+           announced (e.g. before any tab has loaded). -->
+      <div v-if="connectedStore" class="connected-store">
+        <img
+          v-if="connectedStore.logoUrl"
+          :src="connectedStore.logoUrl"
+          alt=""
+          class="store-logo"
+          referrerpolicy="no-referrer"
+        />
+        <div class="store-text">
+          <div class="store-label">{{ t('app.connected_store_label') }}</div>
+          <div class="store-name">{{ connectedStore.name }}</div>
+        </div>
       </div>
     </header>
 
@@ -272,7 +299,7 @@ onUnmounted(() => {
             <span v-if="j.mocked" class="badge mocked">{{ t('recent.badge_mocked') }}</span>
             <span v-else-if="j.error" class="badge offline">{{ t('recent.badge_failed') }}</span>
             <span v-else class="badge online">{{ t('recent.badge_printed') }}</span>
-            <span class="muted job-meta">{{ formatTime(j.receivedAt) }} · {{ j.bytes }}B</span>
+            <span class="muted job-meta">{{ formatDateTime(j.receivedAt) }} · {{ j.bytes }}B</span>
             <span class="chev">{{ expandedJob === j.jobId ? '▾' : '▸' }}</span>
           </button>
           <div v-if="expandedJob === j.jobId" class="job-detail">
@@ -338,6 +365,20 @@ h1 { font-size: 22px; margin: 0; }
 h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.06em; color: #6b7280; margin: 0 0 12px 0; }
 header { margin-bottom: 20px; }
 .header-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
+.brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.brand-logo { width: 32px; height: 32px; object-fit: contain; border-radius: 6px; flex-shrink: 0; }
+.connected-store {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 12px;
+  padding: 8px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #f9fafb;
+}
+.store-logo { width: 28px; height: 28px; object-fit: contain; border-radius: 4px; flex-shrink: 0; border: 1px solid #e5e7eb; background: #ffffff; }
+.store-text { min-width: 0; }
+.store-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: #6b7280; }
+.store-name { font-size: 14px; font-weight: 600; color: #111827; line-height: 1.2; }
 .lang-select {
   padding: 6px 10px;
   border-radius: 8px;

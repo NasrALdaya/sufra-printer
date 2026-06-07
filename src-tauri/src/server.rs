@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 use tower_http::cors::{AllowOrigin, CorsLayer};
 
 use crate::printer;
-use crate::state::{AppState, PrinterConfig, PrinterStatus};
+use crate::state::{AppState, ConnectedStore, PrinterConfig, PrinterStatus};
 
 pub const BRIDGE_PORT: u16 = 9177;
 
@@ -21,6 +21,17 @@ struct HealthResponse {
     ok: bool,
     version: &'static str,
     printers: Vec<PrinterStatus>,
+    #[serde(rename = "connectedStore", skip_serializing_if = "Option::is_none")]
+    connected_store: Option<ConnectedStore>,
+}
+
+#[derive(Deserialize)]
+struct HelloRequest {
+    name: String,
+    #[serde(rename = "logoUrl", default)]
+    logo_url: Option<String>,
+    #[serde(default)]
+    uuid: Option<String>,
 }
 
 #[derive(Serialize)]
@@ -108,6 +119,7 @@ pub async fn run(state: Arc<AppState>) -> anyhow::Result<()> {
         .route("/devices", get(devices))
         .route("/config", get(get_config).put(put_config))
         .route("/jobs", get(jobs))
+        .route("/hello", post(hello))
         .route("/print", post(print))
         .layer(cors)
         .with_state(state);
@@ -124,7 +136,16 @@ async fn health(State(state): State<Arc<AppState>>) -> impl IntoResponse {
         ok: true,
         version: env!("CARGO_PKG_VERSION"),
         printers: state.printer_statuses(),
+        connected_store: state.connected_store(),
     })
+}
+
+async fn hello(
+    State(state): State<Arc<AppState>>,
+    Json(req): Json<HelloRequest>,
+) -> impl IntoResponse {
+    state.set_connected_store(req.name, req.logo_url, req.uuid);
+    Json(serde_json::json!({ "ok": true }))
 }
 
 async fn get_config(State(state): State<Arc<AppState>>) -> impl IntoResponse {

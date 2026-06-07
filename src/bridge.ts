@@ -12,10 +12,18 @@ export interface HealthPrinter {
   status: 'online' | 'offline'
 }
 
+export interface ConnectedStore {
+  name: string
+  logoUrl?: string
+  uuid?: string
+  lastSeenAt: number
+}
+
 export interface HealthResponse {
   ok: boolean
   version: string
   printers: HealthPrinter[]
+  connectedStore?: ConnectedStore
 }
 
 export interface DiscoveredDevice {

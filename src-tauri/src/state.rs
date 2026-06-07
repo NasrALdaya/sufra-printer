@@ -39,9 +39,24 @@ pub struct RecentJob {
     pub error: Option<String>,
 }
 
+#[derive(Clone, Serialize)]
+pub struct ConnectedStore {
+    pub name: String,
+    #[serde(rename = "logoUrl", skip_serializing_if = "Option::is_none")]
+    pub logo_url: Option<String>,
+    #[serde(rename = "uuid", skip_serializing_if = "Option::is_none")]
+    pub uuid: Option<String>,
+    #[serde(rename = "lastSeenAt")]
+    pub last_seen_at: u64,
+}
+
 pub struct AppState {
     printers: RwLock<Vec<PrinterConfig>>,
     recent_jobs: RwLock<VecDeque<RecentJob>>,
+    /// Last dashboard that called POST /hello on this bridge. Treated as
+    /// "the connected store" in the UI. Cleared after an hour with no
+    /// new hello to avoid showing stale info.
+    connected_store: RwLock<Option<ConnectedStore>>,
 }
 
 impl AppState {
@@ -51,7 +66,27 @@ impl AppState {
         Self {
             printers: RwLock::new(printers),
             recent_jobs: RwLock::new(VecDeque::with_capacity(RECENT_JOBS_CAP)),
+            connected_store: RwLock::new(None),
         }
+    }
+
+    pub fn connected_store(&self) -> Option<ConnectedStore> {
+        let store = self.connected_store.read().clone()?;
+        // Hide after an hour without a refresh — keeps stale info from
+        // lingering when the dashboard tab is closed for a while.
+        if now_ms().saturating_sub(store.last_seen_at) > 60 * 60 * 1000 {
+            return None;
+        }
+        Some(store)
+    }
+
+    pub fn set_connected_store(&self, name: String, logo_url: Option<String>, uuid: Option<String>) {
+        *self.connected_store.write() = Some(ConnectedStore {
+            name,
+            logo_url,
+            uuid,
+            last_seen_at: now_ms(),
+        });
     }
 
     pub fn printers(&self) -> Vec<PrinterConfig> {

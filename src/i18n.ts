@@ -11,6 +11,7 @@ interface Dict {
     bridge_not_responding: string
     no_app: string
     works_offline: string
+    connected_store_label: string
   }
   language: { label: string; ar: string; en: string }
   roles: {
@@ -62,6 +63,7 @@ const en: Dict = {
     no_app: 'No app responding at http://127.0.0.1:9177',
     works_offline:
       'Works fully offline. Closing this window leaves the bridge running in the tray.',
+    connected_store_label: 'Connected store',
   },
   language: { label: 'Language', ar: 'العربية', en: 'English' },
   roles: {
@@ -112,12 +114,13 @@ const en: Dict = {
 
 const ar: Dict = {
   app: {
-    title: 'سفرة برينتر',
+    title: 'سُفرة برينتر',
     bridge_running: 'الجسر يعمل',
     bridge_not_responding: 'الجسر لا يستجيب',
     no_app: 'لا يوجد تطبيق يستجيب على http://127.0.0.1:9177',
     works_offline:
       'يعمل دون اتصال بالكامل. إغلاق هذه النافذة يُبقي الجسر يعمل في شريط النظام.',
+    connected_store_label: 'المتجر المتصل',
   },
   language: { label: 'اللغة', ar: 'العربية', en: 'English' },
   roles: {
