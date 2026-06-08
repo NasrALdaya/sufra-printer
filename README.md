@@ -8,9 +8,8 @@ kitchen tickets without ever showing the system print dialog. **Works fully
 offline** — no Sufra server involvement; CORS to the dashboard origin is the
 trust boundary.
 
-> Full architecture, decisions, and progress live in
-> [`PRINTER_BRIDGE_PLAN.md`](../sufra/PRINTER_BRIDGE_PLAN.md) in the sibling
-> `sufra` monorepo. Read that doc before contributing.
+> Architecture, HTTP contract, print flow, and CI live in [`docs/`](./docs/README.md).
+> Original planning notes are in [`PRINTER_BRIDGE_PLAN.md`](../sufra/PRINTER_BRIDGE_PLAN.md) in the sibling `sufra` monorepo.
 
 ## Development
 
