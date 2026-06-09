@@ -1,7 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Sufra Printer",
-  "version": "0.1.0",
   "identifier": "app.sufra.printer",
   "build": {
     "beforeDevCommand": "pnpm dev",
