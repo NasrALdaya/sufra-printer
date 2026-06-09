@@ -6,11 +6,13 @@ import {
   type HealthResponse,
   type PrinterRole,
   type RecentJob,
+  clearJobs,
   deviceLabel,
   getConfig,
   getHealth,
   getJobs,
   listDevices,
+  removeJob,
   saveConfig,
   sendTestReceipt,
 } from './bridge'
@@ -138,6 +140,26 @@ async function onSave() {
 
 function toggleJob(id: string) {
   expandedJob.value = expandedJob.value === id ? null : id
+}
+
+async function onRemoveJob(jobId: string) {
+  try {
+    await removeJob(jobId)
+    jobs.value = jobs.value.filter((j) => j.jobId !== jobId)
+    if (expandedJob.value === jobId) expandedJob.value = null
+  } catch {
+    // silently ignore — the silent poll will reconcile shortly
+  }
+}
+
+async function onClearJobs() {
+  try {
+    await clearJobs()
+    jobs.value = []
+    expandedJob.value = null
+  } catch {
+    // silently ignore
+  }
 }
 
 const testing = ref(false)
@@ -296,6 +318,14 @@ onUnmounted(() => {
           >
             {{ testing ? t('recent.sending') : t('recent.send_test') }}
           </button>
+          <button
+            class="ghost danger"
+            :disabled="!jobs.length"
+            :title="t('recent.clear_all')"
+            @click="onClearJobs"
+          >
+            {{ t('recent.clear_all') }}
+          </button>
         </div>
       </div>
       <p v-if="!jobs.length" class="muted">
@@ -305,15 +335,18 @@ onUnmounted(() => {
       </p>
       <ul v-else class="jobs-list">
         <li v-for="j in jobs" :key="j.jobId" class="job">
-          <button class="job-summary" @click="toggleJob(j.jobId)">
-            <span class="dot" :class="j.error ? 'err' : j.mocked ? 'warn' : 'ok'" />
-            <span class="role">{{ roleLabel(j.role) }}</span>
-            <span v-if="j.mocked" class="badge mocked">{{ t('recent.badge_mocked') }}</span>
-            <span v-else-if="j.error" class="badge offline">{{ t('recent.badge_failed') }}</span>
-            <span v-else class="badge online">{{ t('recent.badge_printed') }}</span>
-            <span class="muted job-meta">{{ formatDateTime(j.receivedAt) }} · {{ j.bytes }}B</span>
-            <span class="chev">{{ expandedJob === j.jobId ? '▾' : '▸' }}</span>
-          </button>
+          <div class="job-row">
+            <button class="job-summary" @click="toggleJob(j.jobId)">
+              <span class="dot" :class="j.error ? 'err' : j.mocked ? 'warn' : 'ok'" />
+              <span class="role">{{ roleLabel(j.role) }}</span>
+              <span v-if="j.mocked" class="badge mocked">{{ t('recent.badge_mocked') }}</span>
+              <span v-else-if="j.error" class="badge offline">{{ t('recent.badge_failed') }}</span>
+              <span v-else class="badge online">{{ t('recent.badge_printed') }}</span>
+              <span class="muted job-meta">{{ formatDateTime(j.receivedAt) }} · {{ j.bytes }}B</span>
+              <span class="chev">{{ expandedJob === j.jobId ? '▾' : '▸' }}</span>
+            </button>
+            <button class="job-remove" :title="t('recent.remove')" @click.stop="onRemoveJob(j.jobId)">×</button>
+          </div>
           <div v-if="expandedJob === j.jobId" class="job-detail">
             <div v-if="j.printer" class="meta-line">
               <span class="meta-key">{{ t('recent.printer_label') }}</span>
@@ -491,11 +524,13 @@ button.ghost:hover:not(:disabled) { background: #eff6ff; border-color: #2563eb; 
 /* Jobs list */
 .jobs-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
 .job { border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; }
+.job-row { display: flex; align-items: stretch; }
 .job-summary {
   display: flex;
   align-items: center;
   gap: 8px;
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   background: #f9fafb;
   border: none;
   padding: 8px 12px;
@@ -504,6 +539,21 @@ button.ghost:hover:not(:disabled) { background: #eff6ff; border-color: #2563eb; 
   border-radius: 0;
 }
 .job-summary:hover { background: #f3f4f6; }
+.job-remove {
+  flex-shrink: 0;
+  background: #f9fafb;
+  border: none;
+  border-inline-start: 1px solid #e5e7eb;
+  color: #9ca3af;
+  padding: 0 12px;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 0;
+}
+.job-remove:hover { background: #fef2f2; color: #ef4444; }
+button.ghost.danger { color: #dc2626; border-color: #fca5a5; }
+button.ghost.danger:hover:not(:disabled) { background: #fef2f2; border-color: #dc2626; }
 .job-meta { margin-inline-start: auto; font-size: 12px; }
 .chev { font-size: 10px; color: #9ca3af; padding-inline-start: 8px; }
 .job-detail { padding: 12px; background: #ffffff; border-top: 1px solid #e5e7eb; }

@@ -4,7 +4,7 @@ use axum::{
     extract::State,
     http::{HeaderValue, Method, StatusCode},
     response::IntoResponse,
-    routing::{get, post},
+    routing::{delete, get, post},
     Json, Router,
 };
 use base64::{engine::general_purpose::STANDARD, Engine as _};
@@ -114,7 +114,7 @@ pub async fn run(state: Arc<AppState>) -> anyhow::Result<()> {
                 || s.starts_with("http://127.0.0.1:")
                 || s.starts_with("https://127.0.0.1:")
         }))
-        .allow_methods([Method::GET, Method::POST])
+        .allow_methods([Method::GET, Method::POST, Method::DELETE])
         .allow_headers([axum::http::header::CONTENT_TYPE])
         .max_age(std::time::Duration::from_secs(600));
 
@@ -122,7 +122,8 @@ pub async fn run(state: Arc<AppState>) -> anyhow::Result<()> {
         .route("/health", get(health))
         .route("/devices", get(devices))
         .route("/config", get(get_config).put(put_config))
-        .route("/jobs", get(jobs))
+        .route("/jobs", get(jobs).delete(delete_all_jobs))
+        .route("/jobs/:id", delete(delete_job))
         .route("/hello", post(hello))
         .route("/print", post(print))
         .layer(cors)
@@ -222,6 +223,19 @@ async fn jobs(State(state): State<Arc<AppState>>) -> impl IntoResponse {
         "ok": true,
         "jobs": state.recent_jobs(),
     }))
+}
+
+async fn delete_job(
+    State(state): State<Arc<AppState>>,
+    axum::extract::Path(id): axum::extract::Path<String>,
+) -> impl IntoResponse {
+    state.remove_job(&id);
+    Json(serde_json::json!({ "ok": true }))
+}
+
+async fn delete_all_jobs(State(state): State<Arc<AppState>>) -> impl IntoResponse {
+    state.clear_jobs();
+    Json(serde_json::json!({ "ok": true }))
 }
 
 async fn devices() -> impl IntoResponse {

@@ -1,6 +1,6 @@
 [package]
 name = "sufra-printer"
-version = "0.3.0"
+version = "0.4.0"
 description = "Sufra Printer — silent ESC/POS thermal printer bridge for the Sufra dashboard"
 authors = ["Sufra"]
 edition = "2021"

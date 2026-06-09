@@ -51,6 +51,8 @@ interface Dict {
     badge_mocked: string
     badge_printed: string
     badge_failed: string
+    remove: string
+    clear_all: string
   }
   status: { title: string; online: string; offline: string }
   update: { available: string; download: string }
@@ -109,6 +111,8 @@ const en: Dict = {
     badge_mocked: 'mocked',
     badge_printed: 'printed',
     badge_failed: 'failed',
+    remove: 'Remove',
+    clear_all: 'Clear all',
   },
   status: { title: 'Live status', online: 'online', offline: 'offline' },
   update: {
@@ -169,6 +173,8 @@ const ar: Dict = {
     badge_mocked: 'تجريبي',
     badge_printed: 'مطبوع',
     badge_failed: 'فشل',
+    remove: 'حذف',
+    clear_all: 'مسح الكل',
   },
   status: { title: 'الحالة المباشرة', online: 'متصل', offline: 'غير متصل' },
   update: {

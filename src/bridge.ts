@@ -96,6 +96,16 @@ export async function getJobs(): Promise<RecentJob[]> {
   return body.jobs ?? []
 }
 
+export async function removeJob(jobId: string): Promise<void> {
+  const res = await fetch(`${BASE}/jobs/${encodeURIComponent(jobId)}`, { method: 'DELETE' })
+  if (!res.ok) throw new Error(`remove job ${res.status}`)
+}
+
+export async function clearJobs(): Promise<void> {
+  const res = await fetch(`${BASE}/jobs`, { method: 'DELETE' })
+  if (!res.ok) throw new Error(`clear jobs ${res.status}`)
+}
+
 function bytesToBase64(bytes: Uint8Array): string {
   const CHUNK = 0x8000
   let s = ''

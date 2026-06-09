@@ -237,6 +237,14 @@ impl AppState {
         }
     }
 
+    pub fn remove_job(&self, job_id: &str) {
+        self.recent_jobs.write().retain(|j| j.job_id != job_id);
+    }
+
+    pub fn clear_jobs(&self) {
+        self.recent_jobs.write().clear();
+    }
+
     fn push_job(&self, job: RecentJob) {
         let mut jobs = self.recent_jobs.write();
         if jobs.len() == RECENT_JOBS_CAP {
