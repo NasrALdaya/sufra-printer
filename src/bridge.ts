@@ -24,6 +24,8 @@ export interface HealthResponse {
   version: string
   printers: HealthPrinter[]
   connectedStore?: ConnectedStore
+  latestVersion?: string
+  updateAvailable?: boolean
 }
 
 export interface DiscoveredDevice {

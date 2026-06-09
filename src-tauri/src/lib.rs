@@ -3,6 +3,7 @@ mod escpos_text;
 mod printer;
 mod server;
 mod state;
+mod updater;
 
 use std::sync::Arc;
 
@@ -18,13 +19,14 @@ pub fn run() {
     init_tracing();
 
     let app_state = Arc::new(state::AppState::new());
-    spawn_bridge_server(app_state.clone());
 
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .manage(app_state)
-        .setup(|app| {
+        .plugin(tauri_plugin_notification::init())
+        .manage(app_state.clone())
+        .setup(move |app| {
             build_tray(app)?;
+            spawn_bridge_server(app_state, app.handle().clone());
             Ok(())
         })
         .on_window_event(|window, event| {
@@ -49,7 +51,7 @@ fn init_tracing() {
         .try_init();
 }
 
-fn spawn_bridge_server(state: Arc<state::AppState>) {
+fn spawn_bridge_server(state: Arc<state::AppState>, app_handle: tauri::AppHandle) {
     std::thread::Builder::new()
         .name("sufra-bridge-http".into())
         .spawn(move || {
@@ -57,6 +59,9 @@ fn spawn_bridge_server(state: Arc<state::AppState>) {
                 .enable_all()
                 .build()
                 .expect("build tokio runtime");
+            let state2 = state.clone();
+            let app2 = app_handle.clone();
+            rt.spawn(async move { updater::run(state2, app2).await });
             if let Err(e) = rt.block_on(server::run(state)) {
                 tracing::error!("bridge server stopped with error: {e}");
             }

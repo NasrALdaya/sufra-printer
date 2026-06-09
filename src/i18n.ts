@@ -53,6 +53,7 @@ interface Dict {
     badge_failed: string
   }
   status: { title: string; online: string; offline: string }
+  update: { available: string; download: string }
 }
 
 const en: Dict = {
@@ -110,6 +111,10 @@ const en: Dict = {
     badge_failed: 'failed',
   },
   status: { title: 'Live status', online: 'online', offline: 'offline' },
+  update: {
+    available: 'Update available: v{version}',
+    download: 'Download',
+  },
 }
 
 const ar: Dict = {
@@ -166,6 +171,10 @@ const ar: Dict = {
     badge_failed: 'فشل',
   },
   status: { title: 'الحالة المباشرة', online: 'متصل', offline: 'غير متصل' },
+  update: {
+    available: 'تحديث متاح: v{version}',
+    download: 'تنزيل',
+  },
 }
 
 const dictionaries: Record<Locale, Dict> = { ar, en }

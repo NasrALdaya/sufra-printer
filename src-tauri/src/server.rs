@@ -23,6 +23,10 @@ struct HealthResponse {
     printers: Vec<PrinterStatus>,
     #[serde(rename = "connectedStore", skip_serializing_if = "Option::is_none")]
     connected_store: Option<ConnectedStore>,
+    #[serde(rename = "latestVersion", skip_serializing_if = "Option::is_none")]
+    latest_version: Option<String>,
+    #[serde(rename = "updateAvailable")]
+    update_available: bool,
 }
 
 #[derive(Deserialize)]
@@ -132,11 +136,18 @@ pub async fn run(state: Arc<AppState>) -> anyhow::Result<()> {
 }
 
 async fn health(State(state): State<Arc<AppState>>) -> impl IntoResponse {
+    let latest_version = state.latest_version();
+    let update_available = latest_version
+        .as_deref()
+        .map(|v| crate::updater::is_newer(v, env!("CARGO_PKG_VERSION")))
+        .unwrap_or(false);
     Json(HealthResponse {
         ok: true,
         version: env!("CARGO_PKG_VERSION"),
         printers: state.printer_statuses(),
         connected_store: state.connected_store(),
+        latest_version,
+        update_available,
     })
 }
 

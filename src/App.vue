@@ -198,6 +198,18 @@ onUnmounted(() => {
         <span v-else>{{ t('app.bridge_not_responding') }}</span>
       </div>
 
+      <!-- Update available banner: shown once the background updater
+           (Rust) confirms a newer release is on GitHub. -->
+      <div v-if="health?.updateAvailable" class="update-banner">
+        <span>{{ t('update.available', { version: health?.latestVersion ?? '' }) }}</span>
+        <a
+          href="https://github.com/NasrALdaya/sufra-printer/releases/latest"
+          target="_blank"
+          rel="noreferrer"
+          class="update-link"
+        >{{ t('update.download') }}</a>
+      </div>
+
       <!-- Connected-store strip: shows which Sufra dashboard tab last
            announced itself via POST /hello, with the store's logo when
            the dashboard sent one. Hidden when no store has been
@@ -442,6 +454,27 @@ button.primary:hover:not(:disabled) { background: #1d4ed8; }
 .badge.online { background: #d1fae5; color: #065f46; }
 .badge.offline { background: #fee2e2; color: #991b1b; }
 .badge.mocked  { background: #fef3c7; color: #92400e; }
+.update-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #1e40af;
+}
+.update-link {
+  color: #2563eb;
+  font-weight: 500;
+  white-space: nowrap;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.update-link:hover { text-decoration: underline; }
 footer { text-align: center; padding: 8px; }
 .card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
 .card-head h2 { margin: 0; }

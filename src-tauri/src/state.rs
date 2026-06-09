@@ -57,6 +57,9 @@ pub struct AppState {
     /// "the connected store" in the UI. Cleared after an hour with no
     /// new hello to avoid showing stale info.
     connected_store: RwLock<Option<ConnectedStore>>,
+    /// Latest release tag (without "v" prefix) fetched from GitHub.
+    /// None until the first update check completes.
+    latest_version: RwLock<Option<String>>,
 }
 
 impl AppState {
@@ -67,6 +70,7 @@ impl AppState {
             printers: RwLock::new(printers),
             recent_jobs: RwLock::new(VecDeque::with_capacity(RECENT_JOBS_CAP)),
             connected_store: RwLock::new(None),
+            latest_version: RwLock::new(None),
         }
     }
 
@@ -78,6 +82,14 @@ impl AppState {
             return None;
         }
         Some(store)
+    }
+
+    pub fn latest_version(&self) -> Option<String> {
+        self.latest_version.read().clone()
+    }
+
+    pub fn set_latest_version(&self, version: String) {
+        *self.latest_version.write() = Some(version);
     }
 
     pub fn set_connected_store(&self, name: String, logo_url: Option<String>, uuid: Option<String>) {
