@@ -23,9 +23,14 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_notification::init())
+        .plugin(tauri_plugin_autostart::init(
+            tauri_plugin_autostart::MacosLauncher::LaunchAgent,
+            None,
+        ))
         .manage(app_state.clone())
         .setup(move |app| {
             build_tray(app)?;
+            enable_autostart(app);
             spawn_bridge_server(app_state, app.handle().clone());
             Ok(())
         })
@@ -100,6 +105,18 @@ fn build_tray(app: &mut tauri::App) -> tauri::Result<()> {
         })
         .build(app)?;
     Ok(())
+}
+
+fn enable_autostart(app: &tauri::App) {
+    use tauri_plugin_autostart::ManagerExt;
+    match app.autolaunch().is_enabled() {
+        Ok(true) => {}
+        _ => {
+            if let Err(e) = app.autolaunch().enable() {
+                tracing::warn!("failed to enable autostart: {e}");
+            }
+        }
+    }
 }
 
 fn show_main_window(app: &tauri::AppHandle) {

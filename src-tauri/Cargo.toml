@@ -1,6 +1,6 @@
 [package]
 name = "sufra-printer"
-version = "0.2.0"
+version = "0.3.0"
 description = "Sufra Printer — silent ESC/POS thermal printer bridge for the Sufra dashboard"
 authors = ["Sufra"]
 edition = "2021"
@@ -49,3 +49,4 @@ rusb = "0.9"
 # Update checker
 reqwest = { version = "0.12", features = ["json"] }
 tauri-plugin-notification = "2"
+tauri-plugin-autostart = "2"
