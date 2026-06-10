@@ -31,6 +31,13 @@ const saving = ref(false)
 const message = ref<{ kind: 'ok' | 'err'; text: string } | null>(null)
 const enumError = ref<string | null>(null)
 const expandedJob = ref<string | null>(null)
+const confirmState = ref<{ message: string; action: () => void } | null>(null)
+
+function runConfirm() {
+  const action = confirmState.value?.action
+  confirmState.value = null
+  action?.()
+}
 
 const roles: PrinterRole[] = ['pos', 'kitchen']
 const roleLabel = (r: PrinterRole) => t(`roles.${r}` as 'roles.pos')
@@ -142,7 +149,14 @@ function toggleJob(id: string) {
   expandedJob.value = expandedJob.value === id ? null : id
 }
 
-async function onRemoveJob(jobId: string) {
+function onRemoveJob(jobId: string) {
+  confirmState.value = {
+    message: t('confirm.remove_job'),
+    action: () => doRemoveJob(jobId),
+  }
+}
+
+async function doRemoveJob(jobId: string) {
   try {
     await removeJob(jobId)
     jobs.value = jobs.value.filter((j) => j.jobId !== jobId)
@@ -152,7 +166,14 @@ async function onRemoveJob(jobId: string) {
   }
 }
 
-async function onClearJobs() {
+function onClearJobs() {
+  confirmState.value = {
+    message: t('confirm.clear_all'),
+    action: doClearJobs,
+  }
+}
+
+async function doClearJobs() {
   try {
     await clearJobs()
     jobs.value = []
@@ -395,6 +416,16 @@ onUnmounted(() => {
     <footer>
       <span class="muted">{{ t('app.works_offline') }}</span>
     </footer>
+
+    <div v-if="confirmState" class="confirm-overlay" @click.self="confirmState = null">
+      <div class="confirm-dialog" role="dialog" aria-modal="true">
+        <p class="confirm-msg">{{ confirmState.message }}</p>
+        <div class="confirm-actions">
+          <button class="primary danger-confirm" @click="runConfirm">{{ t('confirm.yes') }}</button>
+          <button @click="confirmState = null">{{ t('confirm.cancel') }}</button>
+        </div>
+      </div>
+    </div>
   </main>
 </template>
 
@@ -586,4 +617,25 @@ button.ghost.danger:hover:not(:disabled) { background: #fef2f2; border-color: #d
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 0 0 1px #e5e7eb;
   margin: 0 auto;
 }
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.confirm-dialog {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px 24px;
+  max-width: 320px;
+  width: calc(100% - 40px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+.confirm-msg { margin: 0 0 16px; font-size: 14px; color: #111827; line-height: 1.5; }
+.confirm-actions { display: flex; gap: 8px; justify-content: flex-end; }
+button.danger-confirm { background: #dc2626; border-color: #dc2626; }
+button.danger-confirm:hover:not(:disabled) { background: #b91c1c; }
 </style>

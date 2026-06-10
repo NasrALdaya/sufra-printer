@@ -54,6 +54,7 @@ interface Dict {
     remove: string
     clear_all: string
   }
+  confirm: { remove_job: string; clear_all: string; yes: string; cancel: string }
   status: { title: string; online: string; offline: string }
   update: { available: string; download: string }
 }
@@ -113,6 +114,12 @@ const en: Dict = {
     badge_failed: 'failed',
     remove: 'Remove',
     clear_all: 'Clear all',
+  },
+  confirm: {
+    remove_job: 'Remove this print job?',
+    clear_all: 'Clear all print jobs? This cannot be undone.',
+    yes: 'Confirm',
+    cancel: 'Cancel',
   },
   status: { title: 'Live status', online: 'online', offline: 'offline' },
   update: {
@@ -175,6 +182,12 @@ const ar: Dict = {
     badge_failed: 'فشل',
     remove: 'حذف',
     clear_all: 'مسح الكل',
+  },
+  confirm: {
+    remove_job: 'حذف هذه المهمة؟',
+    clear_all: 'مسح جميع المهام؟ لا يمكن التراجع عن هذا.',
+    yes: 'تأكيد',
+    cancel: 'إلغاء',
   },
   status: { title: 'الحالة المباشرة', online: 'متصل', offline: 'غير متصل' },
   update: {
