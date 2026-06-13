@@ -116,6 +116,14 @@ pub async fn run(state: Arc<AppState>) -> anyhow::Result<()> {
         }))
         .allow_methods([Method::GET, Method::POST, Method::DELETE])
         .allow_headers([axum::http::header::CONTENT_TYPE])
+        // Chrome 94+ sends Access-Control-Request-Private-Network: true in
+        // the CORS preflight for POST requests from an HTTPS origin to a
+        // loopback address. Without this response header the entire preflight
+        // fails and the POST is blocked — even though Chrome does NOT block
+        // simple GET requests to loopback (no preflight = no PNA check).
+        // This is why health probes (GET) succeed but print jobs (POST+JSON)
+        // fail, especially after a WAN drop that clears the preflight cache.
+        .allow_private_network(true)
         .max_age(std::time::Duration::from_secs(600));
 
     let app = Router::new()
